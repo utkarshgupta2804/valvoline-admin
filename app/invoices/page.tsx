@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Search, Eye, Download, Plus, FileText } from "lucide-react"
+import { Search, Eye, Download, FileText } from "lucide-react"
 
 interface Invoice {
   id: string
@@ -95,19 +95,17 @@ export default function InvoicesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-600 mt-2">Manage and track all client invoices</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Invoices</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage and track all client invoices</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Invoice
-        </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Invoices</CardTitle>
-          <CardDescription>View and manage all generated invoices</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">All Invoices</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">
+            View and manage all generated invoices
+          </CardDescription>
           <div className="flex items-center space-x-2">
             <Search className="w-4 h-4 text-gray-400" />
             <Input
@@ -181,14 +179,14 @@ export default function InvoicesPage() {
                     <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-orange-500 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">V</span>
                     </div>
-                    <span className="text-xl font-bold text-gray-900">Valvoline</span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">Valvoline</span>
                   </div>
                   <p className="text-sm text-gray-600">123 Oil Street</p>
                   <p className="text-sm text-gray-600">Houston, TX 77001</p>
                   <p className="text-sm text-gray-600">Phone: (555) 123-4567</p>
                 </div>
                 <div className="text-right">
-                  <h2 className="text-2xl font-bold text-gray-900">INVOICE</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">INVOICE</h2>
                   <p className="text-lg font-semibold">{selectedInvoice.invoiceNumber}</p>
                   <div className="mt-2">
                     <Badge variant={getStatusColor(selectedInvoice.status)} className="text-sm">
@@ -201,12 +199,12 @@ export default function InvoicesPage() {
               {/* Client Info */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Bill To:</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Bill To:</h3>
                   <p className="font-medium">{selectedInvoice.clientName}</p>
                   <p className="text-gray-600">{selectedInvoice.clientCompany}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Invoice Details:</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Invoice Details:</h3>
                   <p className="text-sm">
                     <span className="font-medium">Issue Date:</span> {selectedInvoice.issueDate}
                   </p>

@@ -16,19 +16,21 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">Manage your account and system preferences</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your account and system preferences</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <User className="w-5 h-5" />
               Profile Settings
             </CardTitle>
-            <CardDescription>Update your personal information</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
+              Update your personal information
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -52,11 +54,11 @@ export default function SettingsPage() {
         {/* Security Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <Shield className="w-5 h-5" />
               Security
             </CardTitle>
-            <CardDescription>Manage your account security</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">Manage your account security</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -78,11 +80,13 @@ export default function SettingsPage() {
         {/* Notification Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <Bell className="w-5 h-5" />
               Notifications
             </CardTitle>
-            <CardDescription>Configure your notification preferences</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
+              Configure your notification preferences
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -114,16 +118,18 @@ export default function SettingsPage() {
       <RoleGuard requiredRole="admin">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <Database className="w-5 h-5" />
               System Administration
             </CardTitle>
-            <CardDescription>Advanced system settings (Admin only)</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
+              Advanced system settings (Admin only)
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <h3 className="font-semibold">User Management</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">User Management</h3>
                 <div className="space-y-2">
                   <Button variant="outline" className="w-full justify-start">
                     Manage User Roles
@@ -138,7 +144,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-semibold">System Settings</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">System Settings</h3>
                 <div className="space-y-2">
                   <Button variant="outline" className="w-full justify-start">
                     Database Backup

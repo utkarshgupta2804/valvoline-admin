@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,73 +15,82 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Eye, Edit, Trash2 } from "lucide-react"
+import { Plus, Search, Eye, Edit, Trash2, Loader2 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { RoleGuard } from "@/components/role-guard"
 
 interface Client {
-  id: string
-  name: string
-  email: string
-  phone: string
-  company: string
+  _id: string
+  partyName: string
+  partyCode: string
+  city: string
   username: string
   password: string
   status: "active" | "inactive"
   createdAt: string
+  updatedAt: string
 }
 
-const initialClients: Client[] = [
-  {
-    id: "1",
-    name: "John Smith",
-    email: "john@autoservice.com",
-    phone: "+1 (555) 123-4567",
-    company: "Smith Auto Service",
-    username: "john_smith_001",
-    password: "VS2024#abc",
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Sarah Johnson",
-    email: "sarah@quicklube.com",
-    phone: "+1 (555) 987-6543",
-    company: "Quick Lube Express",
-    username: "sarah_johnson_002",
-    password: "VL2024#xyz",
-    status: "active",
-    createdAt: "2024-01-20",
-  },
-]
-
-function generateCredentials(name: string, id: string) {
-  const username = name.toLowerCase().replace(/\s+/g, "_") + "_" + id.padStart(3, "0")
-  const password = "VL" + new Date().getFullYear() + "#" + Math.random().toString(36).substring(2, 5)
-  return { username, password }
+interface ClientInput {
+  partyName: string
+  partyCode: string
+  city: string
 }
 
 export default function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>(initialClients)
+  const [clients, setClients] = useState<Client[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [newClient, setNewClient] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newClient, setNewClient] = useState<ClientInput>({
+    partyName: "",
+    partyCode: "",
+    city: "",
   })
+
+  // Fetch clients from API
+  const fetchClients = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch("/api/clients")
+      const result = await response.json()
+
+      if (result.success) {
+        setClients(result.data)
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch clients",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching clients:", error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch clients",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchClients()
+  }, [])
 
   const filteredClients = clients.filter(
     (client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company.toLowerCase().includes(searchTerm.toLowerCase()),
+      client.partyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.partyCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.username.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleAddClient = () => {
-    if (!newClient.name || !newClient.email || !newClient.company) {
+  const handleAddClient = async () => {
+    if (!newClient.partyName || !newClient.partyCode || !newClient.city) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -90,33 +99,98 @@ export default function ClientsPage() {
       return
     }
 
-    const id = (clients.length + 1).toString()
-    const credentials = generateCredentials(newClient.name, id)
+    try {
+      setIsSubmitting(true)
+      const response = await fetch("/api/clients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newClient),
+      })
 
-    const client: Client = {
-      id,
-      ...newClient,
-      ...credentials,
-      status: "active",
-      createdAt: new Date().toISOString().split("T")[0],
+      const result = await response.json()
+
+      if (result.success) {
+        setClients([result.data, ...clients])
+        setNewClient({ partyName: "", partyCode: "", city: "" })
+        setIsAddDialogOpen(false)
+
+        toast({
+          title: "Client Added Successfully",
+          description: `Username: ${result.credentials.username}, Password: ${result.credentials.password}`,
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to add client",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error adding client:", error)
+      toast({
+        title: "Error",
+        description: "Failed to add client",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteClient = async (clientId: string) => {
+    if (!confirm("Are you sure you want to delete this client?")) {
+      return
     }
 
-    setClients([...clients, client])
-    setNewClient({ name: "", email: "", phone: "", company: "" })
-    setIsAddDialogOpen(false)
+    try {
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: "DELETE",
+      })
 
-    toast({
-      title: "Client Added Successfully",
-      description: `Username: ${credentials.username}, Password: ${credentials.password}`,
-    })
+      const result = await response.json()
+
+      if (result.success) {
+        setClients(clients.filter((client) => client._id !== clientId))
+        toast({
+          title: "Success",
+          description: "Client deleted successfully",
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete client",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error deleting client:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete client",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading clients...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Client Management</h1>
-          <p className="text-gray-600 mt-2">Manage your Valvoline clients and their accounts</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Client Management</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your Valvoline clients and their accounts</p>
         </div>
         <RoleGuard requiredRole="manager">
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -130,53 +204,54 @@ export default function ClientsPage() {
               <DialogHeader>
                 <DialogTitle>Add New Client</DialogTitle>
                 <DialogDescription>
-                  Create a new client account. Username and password will be automatically generated.
+                  Create a new client account. Username and password will be automatically generated using party name
+                  and party code.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="partyName">Party Name *</Label>
                   <Input
-                    id="name"
-                    value={newClient.name}
-                    onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                    placeholder="Enter client's full name"
+                    id="partyName"
+                    value={newClient.partyName}
+                    onChange={(e) => setNewClient({ ...newClient, partyName: e.target.value })}
+                    placeholder="Enter party name"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="partyCode">Party Code *</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    value={newClient.email}
-                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                    placeholder="Enter email address"
+                    id="partyCode"
+                    value={newClient.partyCode}
+                    onChange={(e) => setNewClient({ ...newClient, partyCode: e.target.value })}
+                    placeholder="Enter party code"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="city">City *</Label>
                   <Input
-                    id="phone"
-                    value={newClient.phone}
-                    onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="company">Company *</Label>
-                  <Input
-                    id="company"
-                    value={newClient.company}
-                    onChange={(e) => setNewClient({ ...newClient, company: e.target.value })}
-                    placeholder="Enter company name"
+                    id="city"
+                    value={newClient.city}
+                    onChange={(e) => setNewClient({ ...newClient, city: e.target.value })}
+                    placeholder="Enter city"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} disabled={isSubmitting}>
                     Cancel
                   </Button>
-                  <Button onClick={handleAddClient} className="bg-red-600 hover:bg-red-700">
-                    Add Client
+                  <Button onClick={handleAddClient} className="bg-red-600 hover:bg-red-700" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      "Add Client"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -187,8 +262,10 @@ export default function ClientsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Clients</CardTitle>
-          <CardDescription>View and manage all registered clients</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">All Clients </CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">
+            View and manage all registered clients
+          </CardDescription>
           <div className="flex items-center space-x-2">
             <Search className="w-4 h-4 text-gray-400" />
             <Input
@@ -203,9 +280,9 @@ export default function ClientsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Party Name</TableHead>
+                <TableHead>Party Code</TableHead>
+                <TableHead>City</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Password</TableHead>
                 <TableHead>Status</TableHead>
@@ -214,36 +291,51 @@ export default function ClientsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredClients.map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell className="font-medium">{client.name}</TableCell>
-                  <TableCell>{client.company}</TableCell>
-                  <TableCell>{client.email}</TableCell>
-                  <TableCell className="font-mono text-sm">{client.username}</TableCell>
-                  <TableCell className="font-mono text-sm">{client.password}</TableCell>
-                  <TableCell>
-                    <Badge variant={client.status === "active" ? "default" : "secondary"}>{client.status}</Badge>
-                  </TableCell>
-                  <TableCell>{client.createdAt}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <RoleGuard requiredRole="manager">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </RoleGuard>
-                      <RoleGuard requiredRole="admin">
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </RoleGuard>
-                    </div>
+              {filteredClients.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                    {searchTerm
+                      ? "No clients found matching your search."
+                      : "No clients found. Add your first client to get started."}
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredClients.map((client) => (
+                  <TableRow key={client._id}>
+                    <TableCell className="font-medium">{client.partyName}</TableCell>
+                    <TableCell className="font-mono text-sm">{client.partyCode}</TableCell>
+                    <TableCell>{client.city}</TableCell>
+                    <TableCell className="font-mono text-sm">{client.username}</TableCell>
+                    <TableCell className="font-mono text-sm">{client.password}</TableCell>
+                    <TableCell>
+                      <Badge variant={client.status === "active" ? "default" : "secondary"}>{client.status}</Badge>
+                    </TableCell>
+                    <TableCell>{new Date(client.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button variant="ghost" size="sm">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <RoleGuard requiredRole="manager">
+                          <Button variant="ghost" size="sm">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </RoleGuard>
+                        <RoleGuard requiredRole="admin">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                            onClick={() => handleDeleteClient(client._id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </RoleGuard>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

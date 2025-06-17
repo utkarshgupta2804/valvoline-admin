@@ -6,8 +6,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Valvoline Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Manage your engine oil business operations</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Valvoline Admin Dashboard</h1>
+        <p className="text-gray-600 mt-2 dark:text-gray-400">Manage your engine oil business operations</p>
       </div>
 
       {/* Stats Cards */}
@@ -60,49 +60,51 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link href="/clients">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-red-200 hover:border-red-300">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-red-200 hover:border-red-300 dark:border-red-800 dark:hover:border-red-700 dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-700">
+              <CardTitle className="flex items-center gap-2 text-red-700 dark:text-red-400">
                 <Users className="h-5 w-5" />
                 Client Management
               </CardTitle>
-              <CardDescription>View and manage your clients</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                View and manage your clients
+              </CardDescription>
             </CardHeader>
           </Card>
         </Link>
 
         <Link href="/products">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-orange-200 hover:border-orange-300">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-orange-200 hover:border-orange-300 dark:border-orange-800 dark:hover:border-orange-700 dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-700">
+              <CardTitle className="flex items-center gap-2 text-orange-700 dark:text-orange-400">
                 <Package className="h-5 w-5" />
                 Product Catalog
               </CardTitle>
-              <CardDescription>Manage your oil products</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">Manage your oil products</CardDescription>
             </CardHeader>
           </Card>
         </Link>
 
         <Link href="/invoices">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200 hover:border-blue-300">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200 hover:border-blue-300 dark:border-blue-800 dark:hover:border-blue-700 dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-700">
+              <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
                 <FileText className="h-5 w-5" />
                 Invoices
               </CardTitle>
-              <CardDescription>View and generate invoices</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">View and generate invoices</CardDescription>
             </CardHeader>
           </Card>
         </Link>
 
         <Link href="/purchases">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-green-200 hover:border-green-300">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-green-200 hover:border-green-300 dark:border-green-800 dark:hover:border-green-700 dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-700">
+              <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
                 <TrendingUp className="h-5 w-5" />
                 Purchase Orders
               </CardTitle>
-              <CardDescription>Track product purchases</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">Track product purchases</CardDescription>
             </CardHeader>
           </Card>
         </Link>

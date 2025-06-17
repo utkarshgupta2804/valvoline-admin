@@ -5,13 +5,13 @@ import "./globals.css"
 import { Sidebar } from "@/components/sidebar"
 import { AuthProvider } from "@/lib/auth"
 import { ProtectedRoute } from "@/components/auth/protected-route"
+import { ThemeProvider } from "@/lib/theme"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Valvoline Admin Dashboard",
   description: "Admin dashboard for Valvoline engine oil company",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -22,16 +22,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <ProtectedRoute>
-            <div className="flex h-screen bg-gray-50">
-              <Sidebar />
-              <main className="flex-1 overflow-y-auto">
-                <div className="p-6">{children}</div>
-              </main>
-            </div>
-          </ProtectedRoute>
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <ProtectedRoute>
+              <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto">
+                  <div className="p-6">{children}</div>
+                </main>
+              </div>
+            </ProtectedRoute>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

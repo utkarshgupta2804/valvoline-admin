@@ -112,8 +112,8 @@ export default function PurchasesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Purchase Orders</h1>
-          <p className="text-gray-600 mt-2">Track and manage all product purchases</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Purchase Orders</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Track and manage all product purchases</p>
         </div>
       </div>
 
@@ -162,8 +162,10 @@ export default function PurchasesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Purchase Orders</CardTitle>
-          <CardDescription>View and track all product purchases and deliveries</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">All Purchase Orders</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">
+            View and track all product purchases and deliveries
+          </CardDescription>
           <div className="flex items-center space-x-2">
             <Search className="w-4 h-4 text-gray-400" />
             <Input
