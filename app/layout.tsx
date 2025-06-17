@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <ThemeProvider defaultTheme="system" storageKey="valvoline-ui-theme">
           <AuthProvider>
             <ProtectedRoute>
               <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
