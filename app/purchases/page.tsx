@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-// Using HTML table elements instead of shadcn/ui table components
 import { Badge } from "@/components/ui/badge"
 import { Search, Eye, Truck, Package, RefreshCw, Loader2 } from "lucide-react"
+import InvoiceDialog from "@/components/InvoiceDialog"
 
 interface Purchase {
   id: string
@@ -45,10 +45,21 @@ export default function PurchasesPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Invoice dialog state
+  const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false)
+  const [selectedInvoiceNumber, setSelectedInvoiceNumber] = useState("")
 
-  // Handle view button click - Navigate to purchases/[invoiceNumber]/page.tsx
+  // Handle view button click - Show invoice popup instead of navigation
   const handleViewPurchase = (invoiceNumber: string) => {
-    router.push(`/purchases/${invoiceNumber}`)
+    setSelectedInvoiceNumber(invoiceNumber)
+    setIsInvoiceDialogOpen(true)
+  }
+
+  // Close invoice dialog
+  const handleCloseInvoiceDialog = () => {
+    setIsInvoiceDialogOpen(false)
+    setSelectedInvoiceNumber("")
   }
 
   // Fetch purchases from API
@@ -108,7 +119,7 @@ export default function PurchasesPage() {
   const filteredPurchases = purchases.filter(
     (purchase) =>
       purchase.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      purchase.clientName.toLowerCase().includes(searchTerm.toLowerCase())  ||
+      purchase.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       purchase.orderDate.toLowerCase().includes(searchTerm.toLowerCase()) 
   )
 
@@ -257,7 +268,7 @@ export default function PurchasesPage() {
                   </tr>
                 ) : (
                   filteredPurchases.map((purchase) => (
-                    <tr key={purchase.id} className="border-b hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                    <tr key={purchase.id} className="border-b hover:bg-gray-100 dark:hover:bg-gray-900">
                       <td className="p-4 font-medium">{purchase.orderNumber}</td>
                       <td className="p-4">{purchase.clientName}</td>
                       <td className="p-4">
@@ -301,6 +312,13 @@ export default function PurchasesPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Invoice Dialog */}
+      <InvoiceDialog
+        isOpen={isInvoiceDialogOpen}
+        onClose={handleCloseInvoiceDialog}
+        invoiceNumber={selectedInvoiceNumber}
+      />
     </div>
   )
 }

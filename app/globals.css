@@ -129,3 +129,8 @@
 .dark [data-radix-dialog-content] {
   @apply bg-gray-900 border-gray-700;
 }
+
+.bg-gray-75 {
+  @apply bg-gray-50;
+  background-color: #f9fafb; /* Approx midpoint manually defined */
+}

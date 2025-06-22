@@ -83,6 +83,7 @@ function transformPurchaseData(dbPurchase: DbPurchase) {
     return {
         id: dbPurchase._id?.toString() || '',
         orderNumber: dbPurchase.orderNumber,
+        invoiceNumber: dbPurchase.invoiceNumber,
         clientName: dbPurchase.customerUsername, // Using username as client name
         products: dbPurchase.items.map(item => ({
             name: item.productName,
